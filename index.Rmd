@@ -1,14 +1,78 @@
 ---
 title: "Gov 50 Final Project"
 author: "Jaynie Snow"
-description: "My final project"
+description: "An Analysis of the Impact of Sports Activity on Students' Grades"
 output:
   distill::distill_article:
     self_contained: false
 ---
 
+## Introduction 
+In the realm of academic achievement, extracurricular activities, particularly sports, have long been debated for their impact on students' performance. This project delves into the relationship between sports activity participation and academic grades among students. The central research question is: Does participation in sports activities correlate with higher academic grades? The hypothesis posits that students engaged in sports activities are likely to achieve higher grades, potentially due to enhanced discipline and time management skills. The null hypothesis, conversely, suggests no significant relationship between sports participation and academic performance.
+
+## The Data
+The dataset for this study was sourced from a comprehensive student academic performance study, including various personal and academic attributes. Key variables in the dataset are Sports_Activity_Binary, indicating students' participation in sports (coded as 1 for participation and 0 for non-participation), Student_Age, Sex, and Scholarship. The primary variable of interest, Sports_Activity_Binary, was analyzed against the dependent variable Grade, which was converted into a numeric scale (Grade_Numeric) for statistical analysis.
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+
+ggplot(student_data, aes(x = Grade)) +
+    geom_bar() +
+    labs(title = "Distribution of Student Grades", x = "Grade", y = "Count") +
+    theme_minimal()
+```
+The dataset required transformations to align with the research question. The Grade variable was converted to a numeric scale, and Sports_activity was recoded into a binary format. These modifications were critical for the regression analysis, aiming to quantify the impact of sports activities on academic performance.
+
+Additionally, variables such as Student_Age, Sex, and various Scholarship levels were included as potential confounders. These were considered to control for factors that might influence both sports participation and academic performance, providing a nuanced understanding of the primary relationship.
 
 
-## Project thoughts
+The dependent variable, Grade_Numeric, represents students' academic performance and is a crucial measure for understanding the impact of various factors on educational outcomes. The regression analysis, as presented above, indicates that while sports activity shows a positive association with grades, this relationship is not statistically significant in the dataset. However, other variables like gender and scholarship status show more substantial effects.
 
-I am interested in exploring data related to the Economic Impact of Taylor Swift's Eras Tour. 
+Overall, the dataset provides a comprehensive view of students' academic and extracurricular activities, allowing for an in-depth analysis of factors influencing academic performance.
+
+```{r}
+student_sports_data <- student_data |>
+    mutate(Grade_Numeric = as.numeric(factor(Grade, levels = sort(unique(Grade)))),
+           Sports_Activity_Binary = ifelse(Sports_activity == "Yes", 1, 0))
+
+ggplot(student_sports_data, aes(x = Grade, fill = Sports_activity)) +
+    geom_bar(position = "dodge") +
+    labs(title = "Distribution of Grades Based on Sports Activity", 
+         x = "Grade", y = "Count") +
+    theme_minimal() +
+    scale_fill_brewer(palette = "Set1")
+```
+This cross-sectional study represents a snapshot in time, appropriate for identifying associations rather than causal relationships. The Grade_Numeric variable is pivotal for understanding the impact of various factors on educational outcomes.
+
+##Results
+
+#Analysis of Sports Activity on Student Grades
+
+The primary focus of the study was to assess the impact of sports activity on academic performance, measured by Grade_Numeric. The regression model revealed an intercept of approximately 4.001, indicating the baseline numeric grade for students not engaged in sports. The coefficient for Sports_Activity_Binary was 0.6022, suggesting a positive association with grades. However, this effect was not statistically significant (p-value = 0.14345), indicating that the correlation between sports participation and academic performance, while positive, was not strong enough to be statistically meaningful.
+
+#Inclusion of Confounding Variables
+
+In a broader analysis, additional variables like Student_Age, Sex, and Scholarship levels were incorporated. This inclusion increased the depth of the study, with the model's intercept adjusting to 3.7098. In this comprehensive model, the coefficient for sports activity increased slightly to 0.7997 but remained statistically insignificant (p-value = 0.034).
+
+```{r}
+model <- lm(Grade_Numeric ~ Sports_Activity_Binary + Student_Age + Sex + Scholarship, data = student_data)
+summary(model)
+```
+The results also indicated a slight, non-significant negative association between Student_Age and grades. Being male was associated with a higher numeric grade, but this was not statistically significant. Notably, a 75% scholarship level had a significant positive effect on grades (coefficient = 2.4147, p-value = 0.000).
+
+#Interpretation of Multiple Regression Results
+
+The multiple regression analysis highlighted that while there is a positive relationship between sports activity and student grades, it is not significant when considering other influential factors. The analysis pointed out that scholarship status, particularly a 75% scholarship, has a more pronounced and statistically significant impact on academic performance. These findings suggest a complex interplay of various factors in determining academic success, with sports activity being one of the many contributing elements.
+
+##Conclusion
+### Conclusion
+
+The analysis conducted in this study offers valuable insights into the relationship between sports participation and academic performance among students. While the hypothesis posited a positive correlation between engagement in sports activities and higher academic grades, the results of the regression analysis presented a more nuanced picture. The primary finding indicated a positive association between sports participation and students' grades; however, this relationship did not reach statistical significance. This suggests that, within the confines of this dataset and analysis, sports participation alone does not have a discernible impact on academic achievement.
+
+The inclusion of additional variables such as `Student_Age`, `Sex`, and varying `Scholarship` levels enriched the analysis, revealing the multifaceted nature of factors influencing academic performance. Notably, receiving a 75% scholarship was found to have a significant positive effect on grades, overshadowing the influence of sports participation. This underscores the importance of considering a broad range of factors when evaluating academic success.
+
+The study's cross-sectional nature, however, limits the ability to draw causal conclusions. The findings are observational and represent a snapshot in time, highlighting associations rather than causation. Future research could benefit from a longitudinal approach, tracking changes over time to better assess causality. Additionally, a more expansive dataset, potentially including more detailed measures of sports engagement and academic involvement, would provide a more comprehensive understanding of these relationships.
+
+In conclusion, this research contributes to the ongoing discourse on the role of extracurricular activities in academic settings. It highlights the complexity of factors contributing to academic success and cautions against oversimplifying the impact of sports participation. The study serves as a foundation for further exploration into the diverse elements that shape students' academic journeys.
+
